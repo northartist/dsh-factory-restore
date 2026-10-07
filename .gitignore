@@ -1,0 +1,19 @@
+# 备份目录（本工具默认写在 ~/dsh-factory-restore-backups/）
+backups/
+dsh-factory-restore-backups/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 别把凭证和插件 secret 带进来
+.credentials.yaml
+*.credentials.yaml
