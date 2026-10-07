@@ -33,7 +33,7 @@
 | 备份（完整保留） | `profiles/desktop/` 整份、`skills/`、`sessions/`、`storages/workspace.json`、`.credentials.yaml` |
 | 移进备份 | `notes/`、`speech-to-text/`（231 MB，未删除） |
 | 重写 | `package.json`、`cordis.patch.yml`、`pnpm-workspace.yaml` → 原厂内容 |
-| 删除 | `node_modules/`、`pnpm-lock.yaml`、`.plugin-manager/`、生成的 `cordis.yml` |
+| 删除 | `node_modules/`、`pnpm-lock.yaml`、`.plugin-manager/`、根入口列表 `cordis.yml`（启动会重建） |
 | 退出/重启 | 桌面程序退出（优雅关闭未生效 → 强制结束进程树）→ 还原后重启 |
 
 ## 复核结果

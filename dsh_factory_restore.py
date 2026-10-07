@@ -64,7 +64,7 @@ WORKSPACE_FALLBACK = "packages:\n  - .\n\nnodeLinker: hoisted\nautoInstallPeers:
 
 # profile 里的「非原厂残留」，还原时删除
 PROFILE_JUNK = ["node_modules", "pnpm-lock.yaml", ".plugin-manager", ".dsh-module-fallback"]
-# 自动生成的组合树快照：启动时会重建，还原时顺手删掉
+# 自动生成的 profile 根入口列表（内容 = 说明注释 + 空数组[]，启动时若缺失会重建）
 PROFILE_GENERATED = ["cordis.yml"]
 # 插件产生、随插件一起下架的数据目录（移进备份，不删除）
 HOME_PLUGIN_DIRS = ["notes", "speech-to-text"]

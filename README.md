@@ -68,7 +68,9 @@ python dsh_factory_restore.py --yes
    ③ 插件数据（`notes/`、`speech-to-text/`）
 2. 退出桌面程序（优雅关闭 → 不成功则强制结束进程树）
 3. 写回原厂三件套；删掉 `node_modules`、`pnpm-lock.yaml`、`.plugin-manager`、
-   `.dsh-module-fallback`，以及启动时自动生成的组合树快照 `cordis.yml`
+   `.dsh-module-fallback`，以及剩余的 profile 根入口列表 `cordis.yml`
+   （它是「一段说明 + 空数组」，缺失时启动会自动重建 —— 真正的组合树是按
+   `bundles → cordis.patch.yml` 现场拼的，不在这个文件里）
 4. 重启桌面程序
 5. 复核：依赖是否为空、bundle 层是否只剩两个官方包、patch 层是否为空、插件残留是否清干净
 

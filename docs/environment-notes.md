@@ -13,7 +13,8 @@
 │     ├─ package.json       profile 清单：dependencies + dsh.profile.bundles（唯一挂载源）
 │     ├─ cordis.patch.yml   用户补丁层（hot-reload）
 │     ├─ pnpm-workspace.yaml
-│     ├─ cordis.yml         启动时自动生成的组合树快照 —— 别手改，删了会重建
+│     ├─ cordis.yml         profile 根入口列表（说明注释 + `[]`）；缺失时启动会重建，
+│     │                     真正的组合树是按 bundles → cordis.patch.yml 现场拼的，不在这里
 │     ├─ node_modules/      第三方插件（原厂态不存在）
 │     └─ .plugin-manager/   插件管理器的操作日志（原厂态不存在）
 ├─ skills/                  agent 技能（用户侧）
@@ -76,3 +77,38 @@ dsh.cmd --profile desktop --dump-config
 - profile 的 `cordis.patch.yml` 里可能被插件塞进 API key（例如嵌入模型 endpoint 的 `apiKey`）。
 
 要分享 profile 内容之前先扫一遍这几个文件。
+
+## 怎么看「插件装上之后到底挂载了什么」（组合树）
+
+桌面 profile 被 Electron 独占，`--dump-config` 会被拒绝。想看组合树就造一个临时 profile：
+
+```bash
+dsh probe --from-default-profile web --dump-config > /tmp/a.yml   # 新建 probe 并打印组合树
+dsh plugin --profile probe add dsh-mnemon                        # 装插件
+dsh probe --dump-config > /tmp/b.yml                             # 再看一遍
+diff <(grep -o 'id: .*' /tmp/a.yml) <(grep -o 'id: .*' /tmp/b.yml)
+rm -rf ~/.dsh/profiles/probe                                     # 用完删掉
+```
+
+验证「用户补丁层能不能覆盖插件的数组配置」也是用这个办法（实测：能，数组是整体替换）：
+把 profile 的 `cordis.patch.yml` 复制进临时 profile，再 dump 一次比对。
+
+## `git push` 静默挂死（Windows + Git Credential Manager）
+
+症状：`git ls-remote` 秒回，但 `git push` 一直没输出、也不报错，能挂几分钟。
+原因通常是**凭据链里有会弹界面的 helper**（Git for Windows 系统级挂的
+Git Credential Manager），在非交互 shell 里它等不到人就一直等；如果 store 里
+第一条 token 又恰好失效，就更容易走到它。
+
+绕过（一次性凭据，不落盘）：
+
+```bash
+export GITHUB_TOKEN=$(...取有效 token...)
+git -c credential.helper= \
+    -c credential.helper='!f() { echo username=<你的用户名>; echo password=$GITHUB_TOKEN; }; f' \
+    push -u origin main
+```
+
+或者修好凭据文件：`~/.git-credentials` 里 `store` helper **只用第一条匹配行**，
+把有效 token 放到第一行（失效的在前面会让所有 push 认证失败）。
+
